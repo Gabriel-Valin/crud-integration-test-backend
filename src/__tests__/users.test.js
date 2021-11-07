@@ -2,6 +2,7 @@ const request = require('supertest')
 const { app } = require('../app')
 const UserModel = require('../models/user')
 const mongoose = require('mongoose')
+require('dotenv/config')
 
 const mockUser = {
 	first_name:"any",
@@ -19,7 +20,7 @@ const mockTwoUser = {
 
 describe('User CRUD Operations',() => {   
     beforeAll(async () => {
-            await mongoose.connect('mongodb+srv://gvtech:gabrielvalin11@cluster0.f272f.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {
+            await mongoose.connect(`${process.env.MONGO_URL}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         })
