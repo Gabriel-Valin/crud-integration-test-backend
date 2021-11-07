@@ -1,7 +1,9 @@
 const { openConnection } = require('./database/connection')
 const { app } = require('./app')
+require('dotenv/config')
 
 openConnection().then(() => {
     console.log('Connect Database ✅')
-    app.listen(3232, () => console.log('running at port 3232'))
+    const port = process.env.PORT || 3000
+    app.listen(port, () => console.log(`running at port ${port}`))
 })
