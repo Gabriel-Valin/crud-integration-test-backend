@@ -1,6 +1,6 @@
 const UserModel = require('../models/user')
 
-exports.createUser = (req, res) => {
+exports.createUser = async (req, res) => {
     const {
         first_name,
         last_name,
@@ -8,14 +8,18 @@ exports.createUser = (req, res) => {
         techs
     } = req.body
 
+    const findUser = await UserModel.findOne({ email })
+    
+    if (findUser) {
+        return res.status(400).json({ error: 'This email already used!' })
+    }
+
     const user = new UserModel({ first_name, last_name, email, techs })
     const saved = user.save()
     
     if (saved) {
-        return res.status(201).send()
+        return res.status(201).json(user)
     }
-
-    return res.status(404).json({ error: "Error in created user ❌" })
 }
 
 exports.findAll = async (req, res) => {
@@ -35,13 +39,14 @@ exports.updateUser = async (req, res) => {
         email,
         techs
     } = req.body
-    const user = await UserModel.updateOne({_id: id}, {$set: { first_name, last_name, email, techs }})
+
+    const user = await UserModel.findByIdAndUpdate({_id: id}, {$set: { first_name, last_name, email, techs }}, { new: true })
     
     if (user) {
-        return res.status(201).send()
+        return res.status(201).json(user)
     }
 
-    return res.status(404).json({ error: "Error in updated user ❌" })
+    return res.status(400).json({ error: "No have user with this _id" })
 }
 
 exports.findOne = async (req, res) => {
@@ -52,16 +57,16 @@ exports.findOne = async (req, res) => {
         return res.status(200).json(user)
     }
 
-    return res.status(404).json({ error: "No have user with this _id" })
+    return res.status(400).json({ error: "No have user with this _id" })
 }
 
 exports.delete = async (req, res) => {
     const { id } = req.params
-    const user = await UserModel.deleteOne({ _id: id })
+    const user = await UserModel.findOneAndRemove({ _id: id })
 
     if (user) {
         return res.status(200).send()
     }
-    
-    return res.status(404).json({ error: "No have user with this _id" })
+
+    return res.status(400).json({ error: "No have user with this _id" })
 }

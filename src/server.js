@@ -1,17 +1,5 @@
-const express = require('express')
 const { openConnection } = require('./database/connection')
-const app = express()
-
-const { usersRouter } = require('./routes/user-routes')
-
-app.use(express.json())
-
-app.use('/users', usersRouter)
-
-
-app.get('/health', (request, response) => {
-    return response.json({ message: 'Health Check ✅' })
-})
+const { app } = require('./app')
 
 openConnection().then(() => {
     console.log('Connect Database ✅')
